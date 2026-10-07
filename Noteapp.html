@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notes app</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+        width: 100%;
+      }
+      #main {
+        width: 100%;
+        min-height: 100vh;
+        background-color: aqua;
+        display: flex;
+        flex-wrap: wrap;
+      }
+      .btn {
+        position: fixed;
+        right: 3%;
+        top: 2%;
+        height: 30px;
+        width: 80px;
+        background-color: black;
+        color: white;
+      }
+      .note {
+        height: 300px;
+        width: 300px;
+        margin: 30px;
+        background-color: white;
+      }
+      .note textarea {
+        width: 100%;
+        height: 100%;
+        resize: none;
+        padding: 5px;
+      }
+      .note textarea:focus {
+        border: none;
+        outline: none;
+      }
+      .note .icon {
+        width: 100%;
+        height: 20px;
+        background-color: black;
+        color: white;
+      }
+      .note i {
+        margin: 5px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="btn">ADD</button>
+    <div id="main">
+      <!-- 
+           <div class="note">
+           <div class="icon">
+            <i class="del">del</i>
+            <i class="sav">sav</i>
+         </div> 
+            <textarea></textarea>
+           </div> -->
+    </div>
+
+    <script>
+      const btn = document.querySelector(".btn");
+      const main = document.querySelector("#main");
+
+      btn.addEventListener("click", function () {
+        addnotes();
+      });
+
+      const savenotes = () => {
+        const note = document.querySelectorAll(".note textarea"); //selecting all the textarea to save
+        const data = []; //created a array to store everything
+        note.forEach(
+          //its a foreach function
+          (note) => {
+            //a function inside a foreach function that takes notes as a arguments
+            data.push(note.value);
+          }
+        );
+        if (data.length == 0) {
+          localStorage.removeItem("note");
+        } else {
+          localStorage.setItem("note", JSON.stringify(data));
+        }
+      };
+
+      const addnotes = (text = "") => {
+        const note = document.createElement("div");
+        note.classList.add("note");
+        note.innerHTML = `
+           <div class="icon">
+            <i class="del">del</i>
+            <i class="sav">sav</i>
+         </div> 
+            <textarea>${text}</textarea>
+            `;
+
+        note.querySelector(".del").addEventListener("click", function (params) {
+          note.remove();
+          savenotes();
+        });
+
+        note.querySelector(".sav").addEventListener("click", function (params) {
+          savenotes();
+        });
+
+        main.appendChild(note);
+      };
+
+      note
+        .querySelector("textarea")
+        .addEventListener("focusout", function (params) {
+          savenotes();
+        })(function () {
+        const lsnotes = JSON.parse(localStorage.getItem("note"));
+
+        if (lsnotes == null) {
+          addnotes();
+        } else {
+          lsnotes.forEach((lsnotes) => {
+            addnotes(lsnotes);
+          });
+        }
+      })();
+    </script>
+  </body>
+</html>
